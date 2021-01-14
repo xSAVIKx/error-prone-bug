@@ -1,0 +1,62 @@
+plugins {
+    id 'java'
+    id 'net.ltgt.errorprone' version '1.3.0'
+}
+
+group 'org.example'
+version '1.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+    google()
+}
+
+ext.libraries = [:]
+ext.jsr305Version = '3.0.2'
+ext.libraries['jsr305'] = dependencies.create("com.google.code.findbugs:jsr305:$jsr305Version")
+
+ext.checkerQualVersion = '3.9.1'
+ext.libraries['checker-qual'] = dependencies.create("org.checkerframework:checker-qual:$checkerQualVersion")
+
+ext.errorProneVersion = '2.5.0'
+
+ext.libraries['error_prone_annotations'] =
+        dependencies.create("com.google.errorprone:error_prone_annotations:$errorProneVersion")
+ext.libraries['error_prone_type_annotations'] =
+        dependencies.create("com.google.errorprone:error_prone_type_annotations:$errorProneVersion")
+ext.libraries['error_prone'] =
+        dependencies.create("com.google.errorprone:error_prone_core:$errorProneVersion")
+ext.libraries['error_prone_javac'] = dependencies.create("com.google.errorprone:javac:9+181-r4173-1")
+
+ext.libraries['checkers'] = [
+        ext.libraries['jsr305'],
+        ext.libraries['checker-qual'],
+        ext.libraries['error_prone_annotations'],
+        ext.libraries['error_prone_type_annotations'],
+]
+
+sourceCompatibility = JavaVersion.VERSION_11
+targetCompatibility = JavaVersion.VERSION_11
+
+dependencies {
+    errorprone libraries['error_prone']
+    implementation libraries['checkers']
+
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.7.0'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
+}
+
+test {
+    useJUnitPlatform()
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.errorprone {
+        disableWarningsInGeneratedCode = true
+        errorproneArgs = ["-XepExcludedPaths:.*/generated/.*",
+                          "-Xep:ClassCanBeStatic:OFF",
+                          "-Xep:UnusedMethod:OFF",
+                          "-Xep:UnusedVariable:OFF",
+                          "-Xep:CheckReturnValue:OFF"]
+    }
+}
