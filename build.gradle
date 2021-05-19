@@ -43,7 +43,7 @@ dependencies {
     implementation libraries['checkers']
 
     implementation "com.google.flogger:flogger:0.6"
-    runtime "com.google.flogger:flogger-system-backend:0.6"
+    runtimeOnly "com.google.flogger:flogger-system-backend:0.6"
 
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.7.0'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
