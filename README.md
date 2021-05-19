@@ -7,18 +7,57 @@ How to reproduce the bug.
 2. The compilation fails with the following stacktrace:
 
 ```
-error-prone-bug\src\main\java\com\acme\Diagnostics.java:8: error: An unhandled exception was thrown by the Error Prone static analysis plugin.
-public enum Diagnostics {
-       ^
+error-prone-bug\src\main\java\com\acme\FloggerToStringFailure.java:10: error: An unhandled exception was thrown by the Error Prone static analysis plugin.
+        logger.atInfo().log("This is formatted with toString() %s value", toString());
+                           ^
      Please report this at https://github.com/google/error-prone/issues/new and include the following:
   
-     error-prone version: 2.5.0
-     BugPattern: HidingField
+     error-prone version: 2.7.1
+     BugPattern: FloggerArgumentToString
      Stack Trace:
-     java.lang.NoSuchMethodError: 'com.sun.tools.javac.util.List com.sun.tools.javac.code.Symbol$TypeSymbol.getEnclosedElements()'
-  	at com.google.errorprone.bugpatterns.HidingField.matchClass(HidingField.java:73)
+     java.lang.NullPointerException
+  	at java.base/java.util.Objects.requireNonNull(Objects.java:221)
+  	at com.google.errorprone.bugpatterns.flogger.FloggerArgumentToString$Parameter.<init>(FloggerArgumentToString.java:113)
+  	at com.google.errorprone.bugpatterns.flogger.FloggerArgumentToString$Parameter.<init>(FloggerArgumentToString.java:102)
+  	at com.google.errorprone.bugpatterns.flogger.FloggerArgumentToString$Unwrapper$1.unwrap(FloggerArgumentToString.java:124)
+  	at com.google.errorprone.bugpatterns.flogger.FloggerArgumentToString.unwrap(FloggerArgumentToString.java:349)
+  	at com.google.errorprone.bugpatterns.flogger.FloggerArgumentToString.unwrapArguments(FloggerArgumentToString.java:322)
+  	at com.google.errorprone.bugpatterns.flogger.FloggerArgumentToString.matchMethodInvocation(FloggerArgumentToString.java:291)
   	at com.google.errorprone.scanner.ErrorProneScanner.processMatchers(ErrorProneScanner.java:450)
-  	at com.google.errorprone.scanner.ErrorProneScanner.visitClass(ErrorProneScanner.java:548)
+  	at com.google.errorprone.scanner.ErrorProneScanner.visitMethodInvocation(ErrorProneScanner.java:747)
+  	at com.google.errorprone.scanner.ErrorProneScanner.visitMethodInvocation(ErrorProneScanner.java:151)
+  	at jdk.compiler/com.sun.tools.javac.tree.JCTree$JCMethodInvocation.accept(JCTree.java:1650)
+  	at jdk.compiler/com.sun.source.util.TreePathScanner.scan(TreePathScanner.java:82)
+  	at com.google.errorprone.scanner.Scanner.scan(Scanner.java:74)
+  	at com.google.errorprone.scanner.Scanner.scan(Scanner.java:48)
+  	at jdk.compiler/com.sun.source.util.TreeScanner.visitExpressionStatement(TreeScanner.java:433)
+  	at com.google.errorprone.scanner.ErrorProneScanner.visitExpressionStatement(ErrorProneScanner.java:634)
+  	at com.google.errorprone.scanner.ErrorProneScanner.visitExpressionStatement(ErrorProneScanner.java:151)
+  	at jdk.compiler/com.sun.tools.javac.tree.JCTree$JCExpressionStatement.accept(JCTree.java:1460)
+  	at jdk.compiler/com.sun.source.util.TreePathScanner.scan(TreePathScanner.java:82)
+  	at com.google.errorprone.scanner.Scanner.scan(Scanner.java:74)
+  	at com.google.errorprone.scanner.Scanner.scan(Scanner.java:48)
+  	at jdk.compiler/com.sun.source.util.TreeScanner.scan(TreeScanner.java:105)
+  	at jdk.compiler/com.sun.source.util.TreeScanner.visitBlock(TreeScanner.java:248)
+  	at com.google.errorprone.scanner.ErrorProneScanner.visitBlock(ErrorProneScanner.java:521)
+  	at com.google.errorprone.scanner.ErrorProneScanner.visitBlock(ErrorProneScanner.java:151)
+  	at jdk.compiler/com.sun.tools.javac.tree.JCTree$JCBlock.accept(JCTree.java:1032)
+  	at jdk.compiler/com.sun.source.util.TreePathScanner.scan(TreePathScanner.java:82)
+  	at com.google.errorprone.scanner.Scanner.scan(Scanner.java:74)
+  	at com.google.errorprone.scanner.Scanner.scan(Scanner.java:48)
+  	at jdk.compiler/com.sun.source.util.TreeScanner.scanAndReduce(TreeScanner.java:90)
+  	at jdk.compiler/com.sun.source.util.TreeScanner.visitMethod(TreeScanner.java:206)
+  	at com.google.errorprone.scanner.ErrorProneScanner.visitMethod(ErrorProneScanner.java:741)
+  	at com.google.errorprone.scanner.ErrorProneScanner.visitMethod(ErrorProneScanner.java:151)
+  	at jdk.compiler/com.sun.tools.javac.tree.JCTree$JCMethodDecl.accept(JCTree.java:898)
+  	at jdk.compiler/com.sun.source.util.TreePathScanner.scan(TreePathScanner.java:82)
+  	at com.google.errorprone.scanner.Scanner.scan(Scanner.java:74)
+  	at com.google.errorprone.scanner.Scanner.scan(Scanner.java:48)
+  	at jdk.compiler/com.sun.source.util.TreeScanner.scanAndReduce(TreeScanner.java:90)
+  	at jdk.compiler/com.sun.source.util.TreeScanner.scan(TreeScanner.java:105)
+  	at jdk.compiler/com.sun.source.util.TreeScanner.scanAndReduce(TreeScanner.java:113)
+  	at jdk.compiler/com.sun.source.util.TreeScanner.visitClass(TreeScanner.java:187)
+  	at com.google.errorprone.scanner.ErrorProneScanner.visitClass(ErrorProneScanner.java:549)
   	at com.google.errorprone.scanner.ErrorProneScanner.visitClass(ErrorProneScanner.java:151)
   	at jdk.compiler/com.sun.tools.javac.tree.JCTree$JCClassDecl.accept(JCTree.java:808)
   	at jdk.compiler/com.sun.source.util.TreePathScanner.scan(TreePathScanner.java:82)
@@ -42,7 +81,7 @@ public enum Diagnostics {
   	at jdk.compiler/com.sun.tools.javac.api.JavacTaskImpl.handleExceptions(JavacTaskImpl.java:147)
   	at jdk.compiler/com.sun.tools.javac.api.JavacTaskImpl.doCall(JavacTaskImpl.java:100)
   	at jdk.compiler/com.sun.tools.javac.api.JavacTaskImpl.call(JavacTaskImpl.java:94)
-  	at org.gradle.internal.compiler.java.IncrementalCompileTask.call(IncrementalCompileTask.java:74)
+  	at org.gradle.internal.compiler.java.IncrementalCompileTask.call(IncrementalCompileTask.java:77)
   	at org.gradle.api.internal.tasks.compile.AnnotationProcessingCompileTask.call(AnnotationProcessingCompileTask.java:94)
   	at org.gradle.api.internal.tasks.compile.ResourceCleaningCompilationTask.call(ResourceCleaningCompilationTask.java:57)
   	at org.gradle.api.internal.tasks.compile.JdkJavaCompiler.execute(JdkJavaCompiler.java:55)
@@ -205,7 +244,6 @@ public enum Diagnostics {
   	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1128)
   	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:628)
   	at org.gradle.internal.concurrent.ThreadFactoryImpl$ManagedThreadRunnable.run(ThreadFactoryImpl.java:56)
-
 ```
 
 ## Env
