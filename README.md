@@ -248,5 +248,5 @@ error-prone-bug\src\main\java\com\acme\FloggerToStringFailure.java:10: error: An
 
 ## Env
 
-JDK: 11-13
+JDK: 11-16
 OS: any OS
